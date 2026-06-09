@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AliM's Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.22);
+    --text: #f0ede8;
+    --muted: rgba(240,237,232,0.4);
+    --accent: #5b9cf6;
+    --accent-glow: rgba(91,156,246,0.12);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+  }
+
+  /* ── layout ── */
+  .split {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ════════════════════════
+     LEFT PANEL — title
+  ════════════════════════ */
+  .panel-left {
+    position: relative;
+    width: 38%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 48px 40px;
+    background: linear-gradient(160deg, #1c2333 0%, #0e0e0e 100%);
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  /* subtle vertical accent line on the right edge */
+  .panel-left::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(91,156,246,0.5), transparent);
+  }
+
+  /* faint grid lines on left panel */
+  .panel-left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 0.5px, transparent 0.5px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 0.5px, transparent 0.5px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .left-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-hover);
+    background: var(--surface);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px rgba(91,156,246,0.1);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.1s;
+  }
+  .avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+  .avatar-fallback {
+    display: none;
+    position: absolute; inset: 0;
+    align-items: center; justify-content: center;
+  }
+
+  .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 5.5vw, 88px);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 0.92;
+    color: var(--text);
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+  .title .accent { color: var(--accent); }
+
+  .greeting {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.32s;
+  }
+
+  .footer {
+    margin-top: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,232,0.2);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.7s;
+  }
+
+  /* ════════════════════════
+     RIGHT PANEL — buttons + particles
+  ════════════════════════ */
+  .panel-right {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* noise grain only on right */
+  .panel-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 180px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  .menu {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .menu-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: rgba(22,22,22,0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.2s;
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  .menu-btn:nth-child(1) { animation: fadeLeft 0.55s ease forwards 0.35s; }
+  .menu-btn:nth-child(2) { animation: fadeLeft 0.55s ease forwards 0.48s; }
+  .menu-btn:nth-child(3) { animation: fadeLeft 0.55s ease forwards 0.61s; }
+
+  .menu-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--accent-glow), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .menu-btn:hover { border-color: var(--border-hover); transform: translateX(-4px); }
+  .menu-btn:hover::before { opacity: 1; }
+
+  .btn-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-icon svg { width: 16px; height: 16px; }
+  .menu-btn:hover .btn-icon { border-color: rgba(91,156,246,0.4); background: rgba(91,156,246,0.08); }
+
+  .btn-label { font-size: 14px; font-weight: 400; letter-spacing: 0.02em; }
+  .btn-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .btn-arrow {
+    position: relative; z-index: 1;
+    color: var(--muted);
+    transition: color 0.2s, transform 0.2s;
+    display: flex;
+  }
+  .menu-btn:hover .btn-arrow { color: var(--accent); transform: translateX(3px); }
+
+  /* ── animations ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeLeft {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── mobile ── */
+  @media (max-width: 640px) {
+    .split { flex-direction: column; overflow-y: auto; }
+    html, body { overflow: auto; }
+    .panel-left { width: 100%; min-height: 40vh; justify-content: center; padding: 40px 28px; }
+    .panel-right { min-height: 60vh; padding: 32px 20px; }
+    .panel-left::after { top: auto; bottom: 0; left: 0; width: 100%; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(91,156,246,0.5), transparent); }
+  }
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <!-- LEFT: title -->
+  <div class="panel-left">
+    <div class="left-content">
+
+      <div class="avatar">
+        <img src="Site-Assets/ProfilePic.webp" alt="ProfilePic"
+          onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';">
+        <div class="avatar-fallback" id="avatarFallback">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(240,237,232,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+      </div>
+
+      <div class="title">ALI<span class="accent">M</span></div>
+      <div class="greeting">Hello, my name is Ali</div>
+      <div class="footer">© 2024 TechNL</div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: particles + menu -->
+  <div class="panel-right">
+    <canvas id="bg"></canvas>
+
+    <nav class="menu">
+
+      <a href="Gallery.html" class="menu-btn">
+        <div class="btn-left">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5b9cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div>
+            <div class="btn-label">Gallery</div>
+            <div class="btn-sub">Browse all artwork</div>
+          </div>
+        </div>
+        <span class="btn-arrow">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a href="About.html" class="menu-btn">
+        <div class="btn-left">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5b9cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div>
+            <div class="btn-label">About</div>
+            <div class="btn-sub">Who I am</div>
+          </div>
+        </div>
+        <span class="btn-arrow">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+      <a href="Contact.html" class="menu-btn">
+        <div class="btn-left">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5b9cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+          </div>
+          <div>
+            <div class="btn-label">Contact</div>
+            <div class="btn-sub">Get in touch</div>
+          </div>
+        </div>
+        <span class="btn-arrow">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+
+    </nav>
+  </div>
+
+</div>
+
+<script>
+// ── Floating particles (right panel only) ──
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  const r = canvas.parentElement.getBoundingClientRect();
+  canvas.width = r.width;
+  canvas.height = r.height;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const ACCENT = '91,156,246';
+const COUNT = 80;
+const CONNECT_DIST = 110;
+
+function rand(min, max) { return Math.random() * (max - min) + min; }
+
+class Particle {
+  constructor() { this.init(); }
+  init() {
+    this.x = rand(0, canvas.width);
+    this.y = rand(0, canvas.height);
+    this.r = rand(1, 2.8);
+    this.vx = rand(-0.32, 0.32);
+    this.vy = rand(-0.32, 0.32);
+    this.opacity = rand(0.3, 0.85);
+    this.pulseSpeed = rand(0.005, 0.018);
+    this.pulseOffset = rand(0, Math.PI * 2);
+  }
+  update(t) {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < -10) this.x = canvas.width + 10;
+    if (this.x > canvas.width + 10) this.x = -10;
+    if (this.y < -10) this.y = canvas.height + 10;
+    if (this.y > canvas.height + 10) this.y = -10;
+    this.cur = this.opacity * (0.6 + 0.4 * Math.sin(t * this.pulseSpeed + this.pulseOffset));
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${ACCENT}, ${this.cur})`;
+    ctx.fill();
+  }
+}
+
+const particles = Array.from({ length: COUNT }, () => new Particle());
+let t = 0;
+
+function loop() {
+  t++;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < CONNECT_DIST) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(${ACCENT}, ${(1 - dist / CONNECT_DIST) * 0.15})`;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+  }
+  particles.forEach(p => { p.update(t); p.draw(); });
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
